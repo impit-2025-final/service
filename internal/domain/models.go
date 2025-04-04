@@ -14,14 +14,14 @@ type NodeInfo struct {
 	NodeName     string   `json:"node_name"`
 	IpsJSON      string   `json:"ips_json" gorm:"column:ips_json"`
 	Ips          []string `json:"ips" gorm:"-"`
-	DockerInfoID string   `json:"docker_info_id" gorm:"index"`
+	DockerInfoID uint     `json:"docker_info_id" gorm:"index"`
 }
 
 type DockerInfo struct {
 	gorm.Model
 	Containers []ContainerInfo `json:"containers" gorm:"foreignKey:DockerInfoID;references:ID"`
 	Networks   []NetworkInfo   `json:"networks" gorm:"foreignKey:DockerInfoID;references:ID"`
-	NodeInfoID string          `json:"node_info_id" gorm:"index"`
+	NodeInfoID uint            `json:"node_info_id" gorm:"index"`
 }
 
 type ContainerInfo struct {
@@ -34,7 +34,7 @@ type ContainerInfo struct {
 	Labels            map[string]string `json:"labels" gorm:"-"`
 	AdditionalIPsJSON string            `json:"additional_ips_json" gorm:"column:additional_ips_json"`
 	AdditionalIPs     []string          `json:"additional_ips" gorm:"-"`
-	DockerInfoID      string            `json:"docker_info_id" gorm:"index"`
+	DockerInfoID      uint              `json:"docker_info_id" gorm:"index"`
 }
 
 type NetworkInfo struct {
@@ -44,7 +44,7 @@ type NetworkInfo struct {
 	Gateway        string   `json:"gateway"`
 	ContainersJSON string   `json:"containers_json" gorm:"column:containers_json"`
 	Containers     []string `json:"containers" gorm:"-"`
-	DockerInfoID   string   `json:"docker_info_id" gorm:"index"`
+	DockerInfoID   uint     `json:"docker_info_id" gorm:"index"`
 }
 
 func (n *NodeInfo) BeforeSave(tx *gorm.DB) (err error) {

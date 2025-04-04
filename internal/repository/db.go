@@ -18,10 +18,10 @@ func InitDB(conf config.DBConfig) (*gorm.DB, error) {
 
 	err = db.AutoMigrate(
 		&domain.NetworkTraffic{},
+		&domain.NodeInfo{},
+		&domain.DockerInfo{},
 		&domain.NetworkInfo{},
 		&domain.ContainerInfo{},
-		&domain.DockerInfo{},
-		&domain.NodeInfo{},
 	)
 	if err != nil {
 		return nil, err
