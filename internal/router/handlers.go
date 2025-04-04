@@ -45,11 +45,12 @@ func (h *Handler) GetDockerInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// err = h.useCase.UpdateDockerInfo(r.Context(), dockerInfo)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
+	fmt.Println(dockerInfo)
+	err = h.useCase.UpdateDockerInfo(r.Context(), dockerInfo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
 }
