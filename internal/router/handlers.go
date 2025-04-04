@@ -154,6 +154,8 @@ func (h *Handler) UpdateNodeInfo(w http.ResponseWriter, r *http.Request) {
 	oldNodeInfo.Hostname = nodeInfo.Hostname
 	oldNodeInfo.Ips = nodeInfo.Ips
 
+	fmt.Println(oldNodeInfo)
+
 	err = h.useCase.UpdateNodeInfo(r.Context(), oldNodeInfo)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
