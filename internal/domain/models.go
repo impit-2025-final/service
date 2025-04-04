@@ -9,7 +9,6 @@ import (
 
 type NodeInfo struct {
 	gorm.Model
-	ID           string   `json:"id" gorm:"uniqueIndex"`
 	Token        string   `json:"token" gorm:"uniqueIndex"`
 	Hostname     *string  `json:"hostname"`
 	NodeName     string   `json:"node_name"`
@@ -20,7 +19,6 @@ type NodeInfo struct {
 
 type DockerInfo struct {
 	gorm.Model
-	ID         string          `json:"id" gorm:"uniqueIndex"`
 	Containers []ContainerInfo `json:"containers" gorm:"foreignKey:DockerInfoID;references:ID"`
 	Networks   []NetworkInfo   `json:"networks" gorm:"foreignKey:DockerInfoID;references:ID"`
 	NodeInfoID string          `json:"node_info_id" gorm:"index"`
@@ -28,8 +26,8 @@ type DockerInfo struct {
 
 type ContainerInfo struct {
 	gorm.Model
-	ID                string            `json:"id" gorm:"uniqueIndex"`
-	Name              string            `json:"name"`
+	ContainerID       string            `json:"container_id"`
+	ContainerName     string            `json:"container_name"`
 	IP                string            `json:"ip"`
 	Status            string            `json:"status"`
 	LabelsJSON        string            `json:"labels_json" gorm:"column:labels_json"`
