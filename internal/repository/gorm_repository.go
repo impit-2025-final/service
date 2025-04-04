@@ -35,5 +35,5 @@ func (r *GormRepository) CreateDockerInfo(ctx context.Context, dockerInfo domain
 			return err
 		}
 	}
-	return r.db.Create(dockerInfo).Error
+	return r.db.Create(&dockerInfo).Error
 }
