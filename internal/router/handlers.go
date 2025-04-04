@@ -3,6 +3,7 @@ package router
 import (
 	"compress/gzip"
 	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -113,14 +114,9 @@ func (h *Handler) CreateNodeInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := make([]byte, 32)
-	_, err := rand.Read(token)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	token := GenerateSecureToken(32)
 
-	nodeInfo, err = h.useCase.CreateNodeInfo(r.Context(), string(token), nodeInfo.NodeName)
+	nodeInfo, err := h.useCase.CreateNodeInfo(r.Context(), string(token), nodeInfo.NodeName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -185,4 +181,12 @@ func handleGzipBody(body io.ReadCloser) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("error: %w", err)
 	}
 	return reader, nil
+}
+
+func GenerateSecureToken(length int) string {
+	b := make([]byte, length)
+	if _, err := rand.Read(b); err != nil {
+		return ""
+	}
+	return hex.EncodeToString(b)
 }
