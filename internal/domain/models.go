@@ -7,11 +7,23 @@ import (
 	"gorm.io/gorm"
 )
 
+type NodeInfo struct {
+	gorm.Model
+	ID           string   `json:"id" gorm:"uniqueIndex"`
+	Token        string   `json:"token" gorm:"uniqueIndex"`
+	Hostname     *string  `json:"hostname"`
+	NodeName     string   `json:"node_name"`
+	IpsJSON      string   `json:"ips_json" gorm:"column:ips_json"`
+	Ips          []string `json:"ips" gorm:"-"`
+	DockerInfoID string   `json:"docker_info_id" gorm:"index"`
+}
+
 type DockerInfo struct {
 	gorm.Model
 	ID         string          `json:"id" gorm:"uniqueIndex"`
 	Containers []ContainerInfo `json:"containers" gorm:"foreignKey:DockerInfoID;references:ID"`
 	Networks   []NetworkInfo   `json:"networks" gorm:"foreignKey:DockerInfoID;references:ID"`
+	NodeInfoID string          `json:"node_info_id" gorm:"index"`
 }
 
 type ContainerInfo struct {
@@ -37,6 +49,18 @@ type NetworkInfo struct {
 	DockerInfoID   string   `json:"docker_info_id" gorm:"index"`
 }
 
+func (n *NodeInfo) BeforeSave(tx *gorm.DB) (err error) {
+	if n.Ips != nil {
+		ipsJSON, err := json.Marshal(n.Ips)
+		if err != nil {
+			return err
+		}
+		n.IpsJSON = string(ipsJSON)
+	}
+
+	return nil
+}
+
 func (c *ContainerInfo) BeforeSave(tx *gorm.DB) (err error) {
 	if c.Labels != nil {
 		labelsJSON, err := json.Marshal(c.Labels)
@@ -45,7 +69,6 @@ func (c *ContainerInfo) BeforeSave(tx *gorm.DB) (err error) {
 		}
 		c.LabelsJSON = string(labelsJSON)
 	}
-
 	if c.AdditionalIPs != nil {
 		ipsJSON, err := json.Marshal(c.AdditionalIPs)
 		if err != nil {
@@ -116,9 +139,14 @@ type Repository interface {
 	CreateNetworkTraffic(ctx context.Context, traffic *NetworkTraffic) error
 	CreateNetworkTrafficBatch(ctx context.Context, traffic []NetworkTraffic) error
 	CreateDockerInfo(ctx context.Context, dockerInfo DockerInfo) error
+	CreateNodeInfo(ctx context.Context, token string, nodeName string) (NodeInfo, error)
+	UpdateNodeInfo(ctx context.Context, nodeInfo NodeInfo) error
+	GetNodeInfo(ctx context.Context, token string) (NodeInfo, error)
 }
 
 type UseCase interface {
 	UpdateNetworkTraffic(ctx context.Context, networkTraffic []NetworkTraffic) error
 	UpdateDockerInfo(ctx context.Context, dockerInfo DockerInfo) error
+	UpdateNodeInfo(ctx context.Context, nodeInfo NodeInfo) error
+	GetNodeInfo(ctx context.Context, token string) (NodeInfo, error)
 }

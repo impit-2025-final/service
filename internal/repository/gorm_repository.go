@@ -37,3 +37,17 @@ func (r *GormRepository) CreateDockerInfo(ctx context.Context, dockerInfo domain
 	}
 	return r.db.Create(&dockerInfo).Error
 }
+
+func (r *GormRepository) CreateNodeInfo(ctx context.Context, token string, nodeName string) (domain.NodeInfo, error) {
+	nodeInfo := domain.NodeInfo{Token: token, NodeName: nodeName}
+	return nodeInfo, r.db.Create(&nodeInfo).Error
+}
+
+func (r *GormRepository) UpdateNodeInfo(ctx context.Context, nodeInfo domain.NodeInfo) error {
+	return r.db.Save(&nodeInfo).Error
+}
+
+func (r *GormRepository) GetNodeInfo(ctx context.Context, token string) (domain.NodeInfo, error) {
+	var nodeInfo domain.NodeInfo
+	return nodeInfo, r.db.Where("token = ?", token).First(&nodeInfo).Error
+}

@@ -20,3 +20,15 @@ func (u *ContainerUseCase) UpdateNetworkTraffic(ctx context.Context, networkTraf
 func (u *ContainerUseCase) UpdateDockerInfo(ctx context.Context, dockerInfo domain.DockerInfo) error {
 	return u.repo.CreateDockerInfo(ctx, dockerInfo)
 }
+
+func (u *ContainerUseCase) UpdateNodeInfo(ctx context.Context, nodeInfo domain.NodeInfo) error {
+	return u.repo.UpdateNodeInfo(ctx, nodeInfo)
+}
+
+func (u *ContainerUseCase) CreateNodeInfo(ctx context.Context, token string, nodeName string) (domain.NodeInfo, error) {
+	return u.repo.CreateNodeInfo(ctx, token, nodeName)
+}
+
+func (u *ContainerUseCase) GetNodeInfo(ctx context.Context, token string) (domain.NodeInfo, error) {
+	return u.repo.GetNodeInfo(ctx, token)
+}
