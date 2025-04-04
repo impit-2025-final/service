@@ -1,8 +1,10 @@
 package router
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	domain "service/internal/domain"
 	"service/internal/usecase"
@@ -24,6 +26,17 @@ func (h *Handler) GetDockerInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var err error
+
+	if r.Header.Get("Content-Encoding") == "gzip" {
+		r.Body, err = handleGzipBody(r.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+	}
+
 	var dockerInfo domain.DockerInfo
 
 	if err := json.NewDecoder(r.Body).Decode(&dockerInfo); err != nil {
@@ -32,7 +45,7 @@ func (h *Handler) GetDockerInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.useCase.UpdateDockerInfo(r.Context(), dockerInfo)
+	err = h.useCase.UpdateDockerInfo(r.Context(), dockerInfo)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -47,6 +60,17 @@ func (h *Handler) GetNetworkTraffic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var err error
+
+	if r.Header.Get("Content-Encoding") == "gzip" {
+		r.Body, err = handleGzipBody(r.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+	}
+
 	var networkTraffic []domain.NetworkTraffic
 
 	if err := json.NewDecoder(r.Body).Decode(&networkTraffic); err != nil {
@@ -57,11 +81,19 @@ func (h *Handler) GetNetworkTraffic(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(networkTraffic)
 
-	err := h.useCase.UpdateNetworkTraffic(r.Context(), networkTraffic)
+	err = h.useCase.UpdateNetworkTraffic(r.Context(), networkTraffic)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func handleGzipBody(body io.ReadCloser) (io.ReadCloser, error) {
+	reader, err := gzip.NewReader(body)
+	if err != nil {
+		return nil, fmt.Errorf("error: %w", err)
+	}
+	return reader, nil
 }
