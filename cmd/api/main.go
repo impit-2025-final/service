@@ -3,13 +3,15 @@ package main
 import (
 	"log"
 	"net/http"
+	"service/internal/config"
 	"service/internal/repository"
 	"service/internal/router"
 	"service/internal/usecase"
 )
 
 func main() {
-	db, err := repository.InitDB("containers.db")
+	conf := config.LoadDBConfig()
+	db, err := repository.InitDB(conf)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
