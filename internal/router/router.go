@@ -11,7 +11,7 @@ func SetupRoutes(handler *Handler) *http.ServeMux {
 	mux.HandleFunc("/network-traffic", handler.CreateNetworkTraffic)
 
 	mux.HandleFunc("/node-info", handler.CreateNodeInfo)
-	mux.HandleFunc("/node-info/{id}", handler.UpdateNodeInfo)
+	mux.HandleFunc("/node-info-update", handler.UpdateNodeInfo)
 
 	return mux
 }

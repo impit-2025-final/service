@@ -27,7 +27,7 @@ func (h *Handler) CreateDockerInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.checkToken(w, r)
+	err := h.checkToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -66,7 +66,7 @@ func (h *Handler) CreateNetworkTraffic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.checkToken(w, r)
+	err := h.checkToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -131,19 +131,33 @@ func (h *Handler) CreateNodeInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateNodeInfo(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
+	if r.Method != http.MethodPut {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	var nodeInfo domain.NodeInfo
+	token := r.Header.Get("Authorization")
+	if token == "" {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	oldNodeInfo, err := h.useCase.GetNodeInfo(r.Context(), token)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
 
 	if err := json.NewDecoder(r.Body).Decode(&nodeInfo); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err := h.useCase.UpdateNodeInfo(r.Context(), nodeInfo)
+	oldNodeInfo.Hostname = nodeInfo.Hostname
+	oldNodeInfo.Ips = nodeInfo.Ips
+
+	err = h.useCase.UpdateNodeInfo(r.Context(), oldNodeInfo)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -152,7 +166,7 @@ func (h *Handler) UpdateNodeInfo(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (h *Handler) checkToken(w http.ResponseWriter, r *http.Request) error {
+func (h *Handler) checkToken(r *http.Request) error {
 	token := r.Header.Get("Authorization")
 	if token == "" {
 		return fmt.Errorf("unauthorized")
