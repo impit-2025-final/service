@@ -27,6 +27,7 @@ func (h *Handler) GetDockerInfo(w http.ResponseWriter, r *http.Request) {
 	var dockerInfo domain.DockerInfo
 
 	if err := json.NewDecoder(r.Body).Decode(&dockerInfo); err != nil {
+		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -49,6 +50,7 @@ func (h *Handler) GetNetworkTraffic(w http.ResponseWriter, r *http.Request) {
 	var networkTraffic []domain.NetworkTraffic
 
 	if err := json.NewDecoder(r.Body).Decode(&networkTraffic); err != nil {
+		fmt.Println(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
