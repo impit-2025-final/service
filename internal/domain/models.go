@@ -25,18 +25,16 @@ type ContainerInfo struct {
 	AdditionalIPsJSON string            `json:"additional_ips_json" gorm:"column:additional_ips_json"`
 	AdditionalIPs     []string          `json:"additional_ips" gorm:"-"`
 	DockerInfoID      string            `json:"docker_info_id" gorm:"index"`
-	DockerInfo        DockerInfo        `json:"-" gorm:"foreignKey:DockerInfoID;references:ID"`
 }
 
 type NetworkInfo struct {
 	gorm.Model
-	Name           string     `json:"name"`
-	Subnet         string     `json:"subnet"`
-	Gateway        string     `json:"gateway"`
-	ContainersJSON string     `json:"containers_json" gorm:"column:containers_json"`
-	Containers     []string   `json:"containers" gorm:"-"`
-	DockerInfoID   string     `json:"docker_info_id" gorm:"index"`
-	DockerInfo     DockerInfo `json:"-" gorm:"foreignKey:DockerInfoID;references:ID"`
+	Name           string   `json:"name"`
+	Subnet         string   `json:"subnet"`
+	Gateway        string   `json:"gateway"`
+	ContainersJSON string   `json:"containers_json" gorm:"column:containers_json"`
+	Containers     []string `json:"containers" gorm:"-"`
+	DockerInfoID   string   `json:"docker_info_id" gorm:"index"`
 }
 
 func (c *ContainerInfo) BeforeSave(tx *gorm.DB) (err error) {
