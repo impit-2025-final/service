@@ -76,6 +76,7 @@ func (h *Handler) CreateNetworkTraffic(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Content-Encoding") == "gzip" {
 		r.Body, err = handleGzipBody(r.Body)
 		if err != nil {
+			fmt.Println(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -178,6 +179,7 @@ func (h *Handler) checkToken(r *http.Request) error {
 func handleGzipBody(body io.ReadCloser) (io.ReadCloser, error) {
 	reader, err := gzip.NewReader(body)
 	if err != nil {
+		fmt.Println(err)
 		return nil, fmt.Errorf("error: %w", err)
 	}
 	return reader, nil
