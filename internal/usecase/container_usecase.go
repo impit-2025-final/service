@@ -18,5 +18,6 @@ func (u *ContainerUseCase) UpdateNetworkTraffic(ctx context.Context, networkTraf
 }
 
 func (u *ContainerUseCase) UpdateDockerInfo(ctx context.Context, dockerInfo domain.DockerInfo) error {
+
 	return u.repo.CreateDockerInfo(ctx, dockerInfo)
 }

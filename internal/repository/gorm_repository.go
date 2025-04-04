@@ -24,5 +24,16 @@ func (r *GormRepository) CreateNetworkTrafficBatch(ctx context.Context, traffic 
 }
 
 func (r *GormRepository) CreateDockerInfo(ctx context.Context, dockerInfo domain.DockerInfo) error {
+	for _, container := range dockerInfo.Containers {
+		if err := container.BeforeSave(r.db); err != nil {
+			return err
+		}
+	}
+
+	for _, network := range dockerInfo.Networks {
+		if err := network.BeforeSave(r.db); err != nil {
+			return err
+		}
+	}
 	return r.db.Create(dockerInfo).Error
 }
