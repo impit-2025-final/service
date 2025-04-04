@@ -28,7 +28,7 @@ func (h *Handler) CreateDockerInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.checkToken(r)
+	nodeId, err := h.checkToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -52,7 +52,7 @@ func (h *Handler) CreateDockerInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println(dockerInfo)
-	err = h.useCase.UpdateDockerInfo(r.Context(), dockerInfo)
+	err = h.useCase.UpdateDockerInfo(r.Context(), dockerInfo, nodeId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -67,7 +67,7 @@ func (h *Handler) CreateNetworkTraffic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := h.checkToken(r)
+	_, err := h.checkToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -163,17 +163,17 @@ func (h *Handler) UpdateNodeInfo(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (h *Handler) checkToken(r *http.Request) error {
+func (h *Handler) checkToken(r *http.Request) (uint, error) {
 	token := r.Header.Get("Authorization")
 	if token == "" {
-		return fmt.Errorf("unauthorized")
+		return 0, fmt.Errorf("unauthorized")
 	}
 
-	_, err := h.useCase.GetNodeInfo(r.Context(), token)
+	nodeInfo, err := h.useCase.GetNodeInfo(r.Context(), token)
 	if err != nil {
-		return fmt.Errorf("unauthorized")
+		return 0, fmt.Errorf("unauthorized")
 	}
-	return nil
+	return nodeInfo.ID, nil
 }
 
 func handleGzipBody(body io.ReadCloser) (io.ReadCloser, error) {

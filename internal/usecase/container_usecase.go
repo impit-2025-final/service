@@ -17,8 +17,8 @@ func (u *ContainerUseCase) UpdateNetworkTraffic(ctx context.Context, networkTraf
 	return u.repo.CreateNetworkTrafficBatch(ctx, networkTraffic)
 }
 
-func (u *ContainerUseCase) UpdateDockerInfo(ctx context.Context, dockerInfo domain.DockerInfo) error {
-	return u.repo.CreateDockerInfo(ctx, dockerInfo)
+func (u *ContainerUseCase) UpdateDockerInfo(ctx context.Context, dockerInfo domain.DockerInfo, nodeId uint) error {
+	return u.repo.CreateDockerInfo(ctx, dockerInfo, nodeId)
 }
 
 func (u *ContainerUseCase) UpdateNodeInfo(ctx context.Context, nodeInfo domain.NodeInfo) error {

@@ -23,7 +23,7 @@ func (r *GormRepository) CreateNetworkTrafficBatch(ctx context.Context, traffic 
 	return r.db.Create(traffic).Error
 }
 
-func (r *GormRepository) CreateDockerInfo(ctx context.Context, dockerInfo domain.DockerInfo) error {
+func (r *GormRepository) CreateDockerInfo(ctx context.Context, dockerInfo domain.DockerInfo, nodeId uint) error {
 	for _, container := range dockerInfo.Containers {
 		if err := container.BeforeSave(r.db); err != nil {
 			return err
@@ -35,6 +35,7 @@ func (r *GormRepository) CreateDockerInfo(ctx context.Context, dockerInfo domain
 			return err
 		}
 	}
+	dockerInfo.NodeInfoID = nodeId
 	return r.db.Create(&dockerInfo).Error
 }
 

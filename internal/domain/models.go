@@ -9,12 +9,11 @@ import (
 
 type NodeInfo struct {
 	gorm.Model
-	Token        string   `json:"token" gorm:"uniqueIndex"`
-	Hostname     *string  `json:"hostname"`
-	NodeName     string   `json:"node_name"`
-	IpsJSON      string   `json:"ips_json" gorm:"column:ips_json"`
-	Ips          []string `json:"ips" gorm:"-"`
-	DockerInfoID uint     `json:"docker_info_id" gorm:"index"`
+	Token    string   `json:"token" gorm:"uniqueIndex"`
+	Hostname *string  `json:"hostname"`
+	NodeName string   `json:"node_name"`
+	IpsJSON  string   `json:"ips_json" gorm:"column:ips_json"`
+	Ips      []string `json:"ips" gorm:"-"`
 }
 
 type DockerInfo struct {
@@ -136,7 +135,7 @@ type NetworkTraffic struct {
 type Repository interface {
 	CreateNetworkTraffic(ctx context.Context, traffic *NetworkTraffic) error
 	CreateNetworkTrafficBatch(ctx context.Context, traffic []NetworkTraffic) error
-	CreateDockerInfo(ctx context.Context, dockerInfo DockerInfo) error
+	CreateDockerInfo(ctx context.Context, dockerInfo DockerInfo, nodeId uint) error
 	CreateNodeInfo(ctx context.Context, token string, nodeName string) (NodeInfo, error)
 	UpdateNodeInfo(ctx context.Context, nodeInfo NodeInfo) error
 	GetNodeInfo(ctx context.Context, token string) (NodeInfo, error)
